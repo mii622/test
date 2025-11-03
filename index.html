@@ -10,91 +10,71 @@
       margin: 0;
       background-color: #000;
       color: #fff;
-      padding: 0 20px 100px; /* ← 下に余白をつけて固定合計が隠れないように */
+      padding: 0 20px 180px; /* ← 下に余白（合計欄が重ならないように） */
     }
 
-    header img {
+    .banner {
       width: 100%;
       display: block;
+      height: auto;
     }
 
     h1 {
       text-align: center;
       font-size: 2rem;
       margin: 30px 0;
-      color: #FFD700;
+      color: #ffd700;
       letter-spacing: 2px;
     }
 
     #goods-list {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
-      max-width: 900px;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
     .item {
-      display: flex;
       background: #111;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
-      padding: 15px;
-      gap: 15px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      text-align: center;
+      padding-bottom: 15px;
       transition: transform 0.2s ease;
-      align-items: center;
     }
 
     .item:hover {
-      transform: scale(1.02);
+      transform: scale(1.03);
     }
 
     .item img {
-      width: 100px;
-      height: 100px;
+      width: 100%;
+      height: 180px;
       object-fit: cover;
-      border-radius: 10px;
-      flex-shrink: 0;
-      border: 1px solid #333;
+      display: block;
     }
 
-    .item-content {
-      flex: 1;
-    }
-
-    .item-title {
+    .item-name {
       font-weight: bold;
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-      color: #FFD700;
+      font-size: 1.1rem;
+      margin: 10px 0 5px;
     }
 
-    .item-types {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 10px;
+    .item-price {
+      color: #ccc;
+      margin-bottom: 8px;
     }
 
-    .type {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #222;
-      border-radius: 8px;
-      padding: 8px 12px;
-    }
-
-    .type label {
-      font-size: 0.95rem;
-    }
-
-    .type input {
-      width: 60px;
+    .item-qty {
+      width: 70px;
       text-align: center;
-      border-radius: 5px;
-      border: none;
+      font-size: 1rem;
+      border: 1px solid #888;
+      border-radius: 6px;
       padding: 5px;
-      background: #333;
+      background: #222;
       color: #fff;
     }
 
@@ -103,27 +83,36 @@
       bottom: 0;
       left: 0;
       width: 100%;
-      background: rgba(17, 17, 17, 0.95);
-      border-top: 2px solid #FFD700;
-      color: #fff;
       text-align: center;
-      padding: 15px;
-      box-shadow: 0 -2px 10px rgba(255, 215, 0, 0.4);
-      font-size: 1.1rem;
+      font-size: 1.2em;
+      font-weight: bold;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(8px);
+      padding: 20px 0;
       z-index: 10;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.4);
     }
 
-    #selected-items {
-      margin-top: 8px;
-      font-size: 0.9rem;
-      color: #ccc;
-      line-height: 1.5;
+    #total:hover {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    #selected-list {
+      font-size: 0.9em;
+      color: #ffd;
+      margin-top: 10px;
+      white-space: pre-line;
+      max-height: 120px;
+      overflow-y: auto;
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="images/banner.jpg" alt="バナー画像">
+    <img src="banner.jpg" alt="FNC KINGDOMバナー" class="banner">
   </header>
 
   <h1>FNC KINGDOM グッズ計算</h1>
@@ -131,71 +120,58 @@
   <div id="goods-list"></div>
 
   <div id="total">
-    💰 合計: <span id="total-price">0</span> 円
-    <div id="selected-items"></div>
+    合計: 0 円
+    <div id="selected-list"></div>
   </div>
 
   <script>
     const goods = [
-      { name: "スローガンタオル", price: 2500, types: ["1種"], img: "images/item_towel.jpg" },
-      { name: "Tシャツ", price: 3800, types: ["BLACK", "WHITE"], img: "images/item_tshirt.jpg" },
-      { name: "トートバッグ", price: 3000, types: ["1種"], img: "images/item_tote.jpg" },
-      { name: "クリアバングル", price: 1500, types: ["A","B","C","D","E","F","G","H","I","J"], img: "images/item_bangle.jpg" },
-      { name: "ピクチャーチケットキーホルダー", price: 1000, types: ["A","B","C","D","E","F","G","H","I","J"], img: "images/item_keyholder.jpg" },
-      { name: "スマホリングストラップ", price: 1500, types: ["A","B","C","D","E","F","G","H","I","J"], img: "images/item_strap.jpg" },
-      { name: "ランダム缶バッジ", price: 500, types: ["ランダム"], img: "images/item_badge.jpg" },
-      { name: "ランダムトレーディングカード2枚セット", price: 500, types: ["ランダム"], img: "images/item_card.jpg" }
+      { name: "スローガンタオル", price: 2500, image: "images/towel.jpg" },
+      { name: "クリアバングル（全10種）", price: 1500, image: "images/bangle.jpg" },
+      { name: "Tシャツ（全2種）", price: 3800, image: "images/tshirt.jpg" },
+      { name: "トートバッグ", price: 3000, image: "images/totebag.jpg" },
+      { name: "ランダム缶バッジ（全42種）", price: 500, image: "images/badge.jpg" },
+      { name: "ピクチャーチケットキーホルダー（全10種）", price: 1000, image: "images/keyholder.jpg" },
+      { name: "スマホリングストラップ（全10種）", price: 1500, image: "images/strap.jpg" },
+      { name: "ランダムトレーディングカード2枚セット（全42種）", price: 500, image: "images/tradingcard.jpg" }
     ];
 
-    const list = document.getElementById("goods-list");
+    const container = document.getElementById("goods-list");
 
     goods.forEach((item, index) => {
       const div = document.createElement("div");
       div.className = "item";
       div.innerHTML = `
-        <img src="${item.img}" alt="${item.name}">
-        <div class="item-content">
-          <div class="item-title">${item.name}（${item.price}円）</div>
-          <div class="item-types">
-            ${item.types.map(type => `
-              <div class="type">
-                <label>${type}</label>
-                <input type="number" min="0" value="0" data-index="${index}" data-type="${type}">
-              </div>
-            `).join("")}
-          </div>
-        </div>
+        <img src="${item.image}" alt="${item.name}">
+        <div class="item-name">${item.name}</div>
+        <div class="item-price">${item.price.toLocaleString()}円</div>
+        <input type="number" min="0" value="0" class="item-qty" data-index="${index}">
       `;
-      list.appendChild(div);
+      container.appendChild(div);
     });
 
-    const inputs = document.querySelectorAll("input[type='number']");
-    const totalDisplay = document.getElementById("total-price");
-    const selectedDisplay = document.getElementById("selected-items");
+    const qtyInputs = document.querySelectorAll(".item-qty");
+    const totalDisplay = document.getElementById("total");
+    const selectedList = document.getElementById("selected-list");
 
-    inputs.forEach(input => {
-      input.addEventListener("input", updateTotal);
-    });
+    qtyInputs.forEach(input => {
+      input.addEventListener("input", () => {
+        let total = 0;
+        let selectedText = "";
 
-    function updateTotal() {
-      let total = 0;
-      let selected = [];
+        qtyInputs.forEach(input => {
+          const i = parseInt(input.dataset.index);
+          const quantity = parseInt(input.value) || 0;
+          if (quantity > 0) {
+            selectedText += `${goods[i].name} × ${quantity}\n`;
+            total += goods[i].price * quantity;
+          }
+        });
 
-      inputs.forEach(input => {
-        const index = input.dataset.index;
-        const type = input.dataset.type;
-        const quantity = parseInt(input.value) || 0;
-        if (quantity > 0) {
-          total += goods[index].price * quantity;
-          selected.push(`${goods[index].name}（${type}）×${quantity}`);
-        }
+        totalDisplay.firstChild.textContent = `合計: ${total.toLocaleString()} 円`;
+        selectedList.textContent = selectedText || "";
       });
-
-      totalDisplay.textContent = total.toLocaleString();
-      selectedDisplay.innerHTML = selected.length
-        ? `<b>🧾 内訳：</b><br>${selected.join("<br>")}`
-        : "";
-    }
+    });
   </script>
 </body>
 </html>
